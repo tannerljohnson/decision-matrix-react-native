@@ -20,16 +20,15 @@ const Form = t.form.Form;
 // define Option object
 let Option = t.struct({
   option_1: t.String,
-  option_2: t.String
 });
 
-export default class HomeScreen extends React.Component {
+export default class FactorsScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   state = {
-    options: 2,
+    options: 1,
   }
 
   render() {
@@ -51,7 +50,7 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>What are your options</Text>
+            <Text style={styles.getStartedText}>What are your decision factors</Text>
           </View>
 
           <View style={styles.optionsForm}>
@@ -69,8 +68,12 @@ export default class HomeScreen extends React.Component {
 
           <View style={styles.addOptionContainer}>
             <Button
+              title="Back"
+              onPress={() => navigate("Home")}
+            />
+            <Button
               title="Next"
-              onPress={() => navigate("Factors")}
+              onPress={() => navigate('Links')}
             />
           </View>
 
@@ -103,7 +106,7 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  handleSubmit = (navigate) => {
+  handleSubmit = () => {
     const value = this._form.getValue(); // use that ref to get the form value
     console.log('value: ', value);
     navigate('Links');
