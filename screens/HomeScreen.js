@@ -7,15 +7,30 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Button
 } from 'react-native';
 import { WebBrowser } from 'expo';
+import t from 'tcomb-form-native';
 
 import { MonoText } from '../components/StyledText';
+
+// init form
+const Form = t.form.Form;
+
+// define Option object
+let Option = t.struct({
+  option_1: t.String,
+  option_2: t.String
+});
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
+
+  state = {
+    options: 2,
+  }
 
   render() {
     return (
@@ -33,33 +48,31 @@ export default class HomeScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            {this._maybeRenderDevelopmentModeWarning()}
-
-            <Text style={styles.getStartedText}>Get started by opening</Text>
-
-            <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-              <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-            </View>
-
-            <Text style={styles.getStartedText}>
-              Change this text and your app will automatically reload.
-            </Text>
+            <Text style={styles.getStartedText}>What are your options</Text>
           </View>
 
-          <View style={styles.helpContainer}>
-            <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-              <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
+          <View style={styles.optionsForm}>
+            <Form
+              type={Option}
+              ref={c => this._form = c}
+            />
+          </View>
+
+          <View style={styles.addOptionContainer}>
+            <TouchableOpacity onPress={this._handleAddOptionPress} style={styles.newOptionLink}>
+              <Text style={styles.newOptionLinkText}>Add another option</Text>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.addOptionContainer}>
+            <Button
+              title="Next"
+              onPress={this.handleSubmit}
+            />
+          </View>
+
         </ScrollView>
 
-        <View style={styles.tabBarInfoContainer}>
-          <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-          <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-            <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-          </View>
-        </View>
       </View>
     );
   }
@@ -86,6 +99,26 @@ export default class HomeScreen extends React.Component {
       );
     }
   }
+
+  handleSubmit = () => {
+    const value = this._form.getValue(); // use that ref to get the form value
+    console.log('value: ', value);
+  }
+
+  _handleAddOptionPress = () => {
+    console.log("pressed new option");
+    let newOptionCount = this.state.options + 1;
+    this.setState({
+      options: newOptionCount,
+    });
+    const optionsObj = {};
+    for (let i = 0; i < newOptionCount; i++) {
+      var oId = "option_" + String(i + 1);
+      optionsObj[oId] = t.String;
+    }
+    console.log(optionsObj);
+    Option = t.struct(optionsObj);
+  };
 
   _handleLearnMorePress = () => {
     WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
@@ -141,7 +174,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   getStartedText: {
-    fontSize: 17,
+    fontSize: 25,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 24,
     textAlign: 'center',
@@ -185,4 +218,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#2e78b7',
   },
+  addOptionContainer: {
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  newOptionLink: {
+    paddingVertical: 15,
+    marginBottom: 15,
+  },
+  newOptionLinkText: {
+    fontSize: 14,
+    color: '#2e78b7',
+  },
+  optionsForm: {
+    justifyContent: 'center',
+    marginTop: 50,
+    padding: 20,
+  }
 });
