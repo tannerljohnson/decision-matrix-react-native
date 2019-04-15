@@ -103,12 +103,6 @@ export default class HomeScreen extends React.Component {
     }
   }
 
-  handleSubmit = (navigate) => {
-    const value = this._form.getValue(); // use that ref to get the form value
-    console.log('value: ', value);
-    navigate('Links');
-  }
-
   _handleAddOptionPress = () => {
     console.log("pressed new option");
     let newOptionCount = this.state.options + 1;
@@ -122,16 +116,6 @@ export default class HomeScreen extends React.Component {
     }
     console.log(optionsObj);
     Option = t.struct(optionsObj);
-  };
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
   };
 }
 

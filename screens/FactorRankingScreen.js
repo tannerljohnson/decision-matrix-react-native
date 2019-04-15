@@ -7,33 +7,45 @@ import {
   Text,
   TouchableOpacity,
   View,
-  Button
+  Button,
+  TextInput
 } from 'react-native';
 import { WebBrowser } from 'expo';
 import t from 'tcomb-form-native';
 
 import { MonoText } from '../components/StyledText';
 
-// init form
-const Form = t.form.Form;
 
-// define Factor object
-let Factor = t.struct({
-  factor_1: t.String,
-});
-
-export default class FactorsScreen extends React.Component {
+export default class FactorRankingScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
-  state = {
-    factors: 1,
+  state: {
+    text: '',
+  };
+
+  renderRow(key) {
+    console.log("attempting to render row: " + key)
+    return(
+      <View key={key} style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
+        <View style={{ flex: 1, alignSelf: 'stretch' }}>
+          <Text>Factor number {key}</Text>
+        </View>
+        <View style={{ flex: 1, alignSelf: 'stretch' }}>
+          <TextInput
+          placeholder="Add weight"
+          onChangeText={(text) => this.setState({text})}
+          />
+        </View>
+      </View>
+    );
   }
 
   render() {
     // set up navigator
     const {navigate} = this.props.navigation;
+    const data = [1,2,3,4,5];
 
     return (
       <View style={styles.container}>
@@ -50,30 +62,27 @@ export default class FactorsScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>What are your decision factors</Text>
+            <Text style={styles.getStartedText}>Please add a weight to each factor (must sum to 1)</Text>
           </View>
 
           <View style={styles.optionsForm}>
-            <Form
-              type={Factor}
-              ref={c => this._form = c}
-            />
-          </View>
-
-          <View style={styles.addFactorContainer}>
-            <TouchableOpacity onPress={this._handleAddFactorPress} style={styles.newFactorLink}>
-              <Text style={styles.newFactorLinkText}>Add another factor</Text>
-            </TouchableOpacity>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              {
+                data.map((datum, i) => {
+                    return this.renderRow(i);
+                })
+              }
+            </View>
           </View>
 
           <View style={styles.addFactorContainer}>
             <Button
               title="Back"
-              onPress={() => navigate("Home")}
+              onPress={() => navigate("Factors")}
             />
             <Button
               title="Next"
-              onPress={() => navigate("FactorRanking")}
+              onPress={() => navigate('OptionScoring')}
             />
           </View>
 
@@ -83,21 +92,6 @@ export default class FactorsScreen extends React.Component {
     );
   }
 
-  _handleAddFactorPress = () => {
-    console.log("pressed new factor");
-    // TODO: don't use state for this
-    let newFactorCount = this.state.factors + 1;
-    this.setState({
-      factors: newFactorCount,
-    });
-    const factorsObj = {};
-    for (let i = 0; i < newFactorCount; i++) {
-      var fId = "factor_" + String(i + 1);
-      factorsObj[fId] = t.String;
-    }
-    console.log(factorsObj);
-    Factor = t.struct(factorsObj);
-  };
 }
 
 const styles = StyleSheet.create({
