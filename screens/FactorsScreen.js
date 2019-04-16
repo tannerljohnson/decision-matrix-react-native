@@ -27,13 +27,26 @@ export default class FactorsScreen extends React.Component {
     header: null,
   };
 
-  state = {
-    factors: 1,
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: {
+        factor_1: '',
+      },
+    }
   }
+
+  // update state on user input 
+  onChange = value => {
+    this.setState({
+      value: value,
+    });
+  };
 
   render() {
     // set up navigator
     const {navigate} = this.props.navigation;
+    const optionValues = this.props.navigation.getParam('optionValues', 'No option values');
 
     return (
       <View style={styles.container}>
@@ -51,12 +64,23 @@ export default class FactorsScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <Text style={styles.getStartedText}>What are your decision factors</Text>
+            <Text> 
+              Received values: {
+                JSON.stringify(optionValues)
+              } 
+            </Text>
           </View>
 
           <View style={styles.optionsForm}>
             <Form
               type={Factor}
-              ref={c => this._form = c}
+              ref="factor_form"
+              value = {
+                this.state.value
+              }
+              onChange = {
+                this.onChange
+              }
             />
           </View>
 
@@ -72,8 +96,20 @@ export default class FactorsScreen extends React.Component {
               onPress={() => navigate("Home")}
             />
             <Button
-              title="Next"
-              onPress={() => navigate("FactorRanking")}
+              title = "Next"
+              onPress = {
+                () => {
+                  var value = this.refs.factor_form.getValue();
+                  console.log(this.refs.factor_form.getValue());
+                  if (!value) {
+                    return;
+                  }
+                  navigate("FactorRanking", {
+                    optionValues: optionValues,
+                    factorValues: this.refs.factor_form.getValue()
+                  });
+                }
+              }
             />
           </View>
 
@@ -85,17 +121,24 @@ export default class FactorsScreen extends React.Component {
 
   _handleAddFactorPress = () => {
     console.log("pressed new factor");
-    // TODO: don't use state for this
-    let newFactorCount = this.state.factors + 1;
-    this.setState({
-      factors: newFactorCount,
-    });
+
+    // plus one to current values length 
+    let newFactorCount = Object.keys(this.state.value).length + 1;
+    console.log("new factor count is " + newFactorCount);
     const factorsObj = {};
+
+    // reconstruct Factor form object to add one 
     for (let i = 0; i < newFactorCount; i++) {
       var fId = "factor_" + String(i + 1);
       factorsObj[fId] = t.String;
     }
-    console.log(factorsObj);
+
+    // grab old values and reload component by updating state 
+    const oldFormValues = this.refs.factor_form.getValue();
+    this.setState({
+      values: oldFormValues
+    });
+
     Factor = t.struct(factorsObj);
   };
 }

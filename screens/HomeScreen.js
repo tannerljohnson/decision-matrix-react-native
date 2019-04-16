@@ -28,9 +28,22 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
-  state = {
-    options: 2,
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: {
+        option_1: '',
+        option_2: '',
+      }
+    };
   }
+
+  // update state on user input 
+  onChange = value => {
+    this.setState({
+      value: value,
+    });
+  };
 
   render() {
     // set up navigator
@@ -57,20 +70,38 @@ export default class HomeScreen extends React.Component {
           <View style={styles.optionsForm}>
             <Form
               type={Option}
-              ref={c => this._form = c}
+              ref="form"
+              value = {
+                this.state.value
+              }
+              onChange = {
+                this.onChange
+              }
             />
           </View>
 
           <View style={styles.addOptionContainer}>
             <TouchableOpacity onPress={this._handleAddOptionPress} style={styles.newOptionLink}>
-              <Text style={styles.newOptionLinkText}>Add another option</Text>
+              <Text style={styles.newOptionLinkText}>
+                Add another option
+              </Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.addOptionContainer}>
             <Button
               title="Next"
-              onPress={() => navigate("Factors")}
+              onPress={() => {
+                var value = this.refs.form.getValue();
+                console.log(this.refs.form.getValue());
+                if (!value) {
+                  return;
+                }
+                navigate("Factors", { 
+                  optionValues: this.refs.form.getValue()
+                });
+              }
+            }
             />
           </View>
 
@@ -104,17 +135,20 @@ export default class HomeScreen extends React.Component {
   }
 
   _handleAddOptionPress = () => {
-    console.log("pressed new option");
-    let newOptionCount = this.state.options + 1;
-    this.setState({
-      options: newOptionCount,
-    });
+    // plus one to current values length 
+    let newOptionCount = Object.keys(this.state.value).length + 1;
     const optionsObj = {};
+
+    // reconstruct Option form object to add one 
     for (let i = 0; i < newOptionCount; i++) {
       var oId = "option_" + String(i + 1);
       optionsObj[oId] = t.String;
     }
-    console.log(optionsObj);
+
+    // grab old values and reload component by updating state 
+    const oldFormValues = this.refs.form.getValue();
+    this.setState({values: oldFormValues});
+
     Option = t.struct(optionsObj);
   };
 }

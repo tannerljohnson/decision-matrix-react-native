@@ -21,16 +21,19 @@ export default class FactorRankingScreen extends React.Component {
     header: null,
   };
 
-  state: {
-    text: '',
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: '',
+    }
   };
 
-  renderRow(key) {
+  renderRow(factor, key) {
     console.log("attempting to render row: " + key)
     return(
       <View key={key} style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
-          <Text>Factor number {key}</Text>
+          <Text>{factor}</Text>
         </View>
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
           <TextInput
@@ -45,7 +48,11 @@ export default class FactorRankingScreen extends React.Component {
   render() {
     // set up navigator
     const {navigate} = this.props.navigation;
-    const data = [1,2,3,4,5];
+    const optionValues = this.props.navigation.getParam('optionValues', 'No option values');
+    const factorValues = this.props.navigation.getParam('factorValues', 'No factor values');
+
+    // const data = [1,2,3,4,5];
+    const data = Object.values(factorValues);
 
     return (
       <View style={styles.container}>
@@ -63,13 +70,24 @@ export default class FactorRankingScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <Text style={styles.getStartedText}>Please add a weight to each factor (must sum to 1)</Text>
+            <Text>
+              Received option values: {
+                JSON.stringify(optionValues)
+              }
+            </Text>
+            <Text>
+              Received factor values: {
+                JSON.stringify(factorValues)
+              }
+            </Text>
+            
           </View>
 
           <View style={styles.optionsForm}>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               {
-                data.map((datum, i) => {
-                    return this.renderRow(i);
+                data.map((factor, i) => {
+                    return this.renderRow(factor, i);
                 })
               }
             </View>
