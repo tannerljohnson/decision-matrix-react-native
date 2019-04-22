@@ -114,6 +114,7 @@ export default class OptionScoringScreen extends React.Component {
     // set up navigator
     const {navigate} = this.props.navigation;
     const data = [1,2,3,4,5];
+    const allWeights = this.props.navigation.getParam('allWeights', 'No weight values');
 
     return (
       <View style={styles.container}>
@@ -131,6 +132,11 @@ export default class OptionScoringScreen extends React.Component {
 
           <View style={styles.getStartedContainer}>
             <Text style={styles.getStartedText}>Score option #1</Text>
+            < Text >
+              Received factor weights: {
+                JSON.stringify(allWeights)
+              }
+              </Text>
           </View>
 
           <View style={styles.optionsForm}>

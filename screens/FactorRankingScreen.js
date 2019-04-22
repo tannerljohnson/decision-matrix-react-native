@@ -21,11 +21,27 @@ export default class FactorRankingScreen extends React.Component {
     header: null,
   };
 
+  // constructor(props) {
+  //   super(props);
+  //   this.state = {
+  //     text: '',
+  //   }
+  // };
+
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
     }
+  }
+
+  // update state on user input
+  onChange = (text, key) => {
+    this.setState({
+      [`factor_${key}`]: text,
+    }, () => {
+      console.log("Inside callback. State is now:");
+      console.log(this.state);
+    });
   };
 
   renderRow(factor, key) {
@@ -38,7 +54,8 @@ export default class FactorRankingScreen extends React.Component {
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
           <TextInput
           placeholder="Add weight"
-          onChangeText={(text) => this.setState({text})}
+          onChangeText={(text) => this.onChange(text, key)}
+          // onChangeText={(text) => this.setState({text})} maybe change text to key
           />
         </View>
       </View>
@@ -100,7 +117,18 @@ export default class FactorRankingScreen extends React.Component {
             />
             <Button
               title="Next"
-              onPress={() => navigate('OptionScoring')}
+              onPress = {
+                () => {
+                  var allWeights = this.state;
+                  console.log(allWeights);
+                  if (!allWeights) { // finish validation
+                    return;
+                  }
+                  navigate("OptionScoring", {
+                    allWeights: allWeights,
+                  });
+                }
+              }
             />
           </View>
 
