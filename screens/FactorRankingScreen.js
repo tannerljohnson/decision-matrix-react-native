@@ -21,17 +21,9 @@ export default class FactorRankingScreen extends React.Component {
     header: null,
   };
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     text: '',
-  //   }
-  // };
-
   constructor(props) {
     super(props);
-    this.state = {
-    }
+    this.state = {}
   }
 
   // update state on user input
@@ -126,6 +118,10 @@ export default class FactorRankingScreen extends React.Component {
                   }
                   navigate("OptionScoring", {
                     allWeights: allWeights,
+                    optionValues: optionValues,
+                    factorValues: factorValues,
+                    currentOptionIndex: 0,
+                    currentOption: Object.values(optionValues)[0],
                   });
                 }
               }

@@ -55,6 +55,7 @@ const scoreValues = [
     value: 0,
   },
 ];
+
 const placeholder = {
   label: 'Select a value...',
   value: -1,
@@ -70,35 +71,52 @@ export default class OptionScoringScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state =  {
-      score: -1,
+      myOptionIndex: 0,
+      myCurrentOption: this.props.navigation.getParam('currentOption', 'No current option'),
     };
   }
 
+  // bundle all values before passing to next
+  addWeightsToOption = (optionValues, currentOptionIndex) => {
+    // add state object to optionValues
+    optionValues[`option_${String(currentOptionIndex+1)}_factor_weights`] = this.state;
+  }
 
-  renderRow(key) {
+  verifyHasNextOption(optionValues, currentOptionIndex) {
+    console.log(`running verifyHasNextOption on index ${currentOptionIndex}...`);
+    return Object.keys(optionValues).length > currentOptionIndex + 1;
+  }
+
+  // update state on user input
+  onChange = (value, key) => {
+    this.setState({
+      [`score_factor_${key}`]: value,
+    }, () => {
+      console.log("Inside callback. State is now:");
+      console.log(this.state);
+    });
+  };
+
+  renderRow(factor, key) {
 
     return(
       <View key={key} style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
-          <Text>Factor number {key}</Text>
+          <Text>{factor}</Text>
         </View>
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
           <RNPickerSelect
             placeholder={placeholder}
             items={scoreValues}
-            onValueChange={value => {
-              this.setState({
-                score: value,
-              });
-            }}
+            onValueChange={value => this.onChange(value, key)}
             style={{
               ...pickerSelectStyles,
               iconContainer: {
-                top: 10,
+                top: 10, 
                 right: 12,
               },
             }}
-            value={this.state.score}
+            value = { this.state[`score_factor_${key}`]}
             useNativeAndroidPickerStyle={false}
             textInputProps={{ underlineColor: 'yellow' }}
             Icon={() => {
@@ -113,8 +131,14 @@ export default class OptionScoringScreen extends React.Component {
   render() {
     // set up navigator
     const {navigate} = this.props.navigation;
-    const data = [1,2,3,4,5];
     const allWeights = this.props.navigation.getParam('allWeights', 'No weight values');
+    var optionValues = this.props.navigation.getParam('optionValues', 'No option values');
+    const factorValues = this.props.navigation.getParam('factorValues', 'No factor values');
+    const factorData = Object.values(factorValues);
+
+    // retrieve current option index 
+    var currentOption = this.props.navigation.getParam('currentOption', 'No current option');
+    var currentOptionIndex = this.props.navigation.getParam('currentOptionIndex', 'No current option index');
 
     return (
       <View style={styles.container}>
@@ -131,7 +155,7 @@ export default class OptionScoringScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>Score option #1</Text>
+            <Text style={styles.getStartedText}>Score option #{String(this.state.myOptionIndex + 1)}: {this.state.myCurrentOption}</Text>
             < Text >
               Received factor weights: {
                 JSON.stringify(allWeights)
@@ -142,8 +166,8 @@ export default class OptionScoringScreen extends React.Component {
           <View style={styles.optionsForm}>
             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
               {
-                data.map((datum, i) => {
-                    return this.renderRow(i);
+                factorData.map((factor, i) => {
+                    return this.renderRow(factor, i);
                 })
               }
             </View>
@@ -156,7 +180,26 @@ export default class OptionScoringScreen extends React.Component {
             />
             <Button
               title="Next"
-              onPress={() => navigate('Results')}
+              onPress={() => {
+                // first save current state to larger bundled object. object includes next index, etc.
+                this.addWeightsToOption(optionValues, currentOptionIndex);
+                // if returned bundled object says no more index, go to results. else navigate to same screen again
+                var hasNextOption = this.verifyHasNextOption(optionValues, this.state.myOptionIndex);
+                if (hasNextOption) {
+                  ++currentOptionIndex;
+                  currentOption = Object.values(optionValues)[currentOptionIndex];
+                  console.log(`has next index: ${currentOptionIndex}`);
+                  this.setState({
+                    myCurrentOption: currentOption,
+                    myOptionIndex: currentOptionIndex,
+                    }, console.log(optionValues)
+                  )
+                } else {
+                  // TODO: add all the data! 
+                  navigate('Results');
+                }
+              }
+            }
             />
           </View>
 
