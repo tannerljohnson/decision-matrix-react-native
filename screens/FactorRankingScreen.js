@@ -1,3 +1,5 @@
+/* eslint-disable global-require */
+/* eslint-disable no-use-before-define */
 import React from 'react';
 import {
   Image,
@@ -5,49 +7,59 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Button,
   TextInput
 } from 'react-native';
-import { WebBrowser } from 'expo';
-import t from 'tcomb-form-native';
-
-import { MonoText } from '../components/StyledText';
-
 
 export default class FactorRankingScreen extends React.Component {
-  static navigationOptions = {
-    header: null,
-  };
-
   constructor(props) {
     super(props);
-    this.state = {}
+    this.state = {};
   }
 
   // update state on user input
   onChange = (text, key) => {
-    this.setState({
-      [`factor_${key}`]: text,
-    }, () => {
-      console.log("Inside callback. State is now:");
-      console.log(this.state);
-    });
+    this.setState(
+      {
+        [`factor_${key}`]: text
+      },
+      () => {
+        console.log('Inside callback. State is now:');
+        console.log(this.state);
+      }
+    );
   };
 
   renderRow(factor, key) {
-    console.log("attempting to render row: " + key)
-    return(
-      <View key={key} style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
-        <View style={{ flex: 1, alignSelf: 'stretch' }}>
+    console.log(`attempting to render row: ${key}`);
+    return (
+      <View
+        key={key}
+        style={{
+          flex: 1,
+          alignSelf: 'stretch',
+          flexDirection: 'row'
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            alignSelf: 'stretch'
+          }}
+        >
           <Text>{factor}</Text>
         </View>
-        <View style={{ flex: 1, alignSelf: 'stretch' }}>
+        <View
+          style={{
+            flex: 1,
+            alignSelf: 'stretch'
+          }}
+        >
           <TextInput
-          placeholder="Add weight"
-          onChangeText={(text) => this.onChange(text, key)}
-          // onChangeText={(text) => this.setState({text})} maybe change text to key
+            placeholder="Add weight"
+            onChangeText={text => this.onChange(text, key)}
+            // onChangeText={(text) => this.setState({text})} maybe change text to key
           />
         </View>
       </View>
@@ -56,7 +68,8 @@ export default class FactorRankingScreen extends React.Component {
 
   render() {
     // set up navigator
-    const {navigate} = this.props.navigation;
+    // const { navigate } = this.navigation;
+    const { navigate } = this.props.navigation;
     const optionValues = this.props.navigation.getParam('optionValues', 'No option values');
     const factorValues = this.props.navigation.getParam('factorValues', 'No factor values');
 
@@ -69,6 +82,7 @@ export default class FactorRankingScreen extends React.Component {
           <View style={styles.welcomeContainer}>
             <Image
               source={
+                // eslint-disable-next-line no-undef
                 __DEV__
                   ? require('../assets/images/robot-dev.png')
                   : require('../assets/images/robot-prod.png')
@@ -78,111 +92,105 @@ export default class FactorRankingScreen extends React.Component {
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>Please add a weight to each factor (must sum to 1)</Text>
-            <Text>
-              Received option values: {
-                JSON.stringify(optionValues)
-              }
+            <Text style={styles.getStartedText}>
+              Please add a weight to each factor (must sum to 1)
             </Text>
             <Text>
-              Received factor values: {
-                JSON.stringify(factorValues)
-              }
+              Received option values:
+              {JSON.stringify(optionValues)}
             </Text>
-            
+            <Text>
+              Received factor values:
+              {JSON.stringify(factorValues)}
+            </Text>
           </View>
 
           <View style={styles.optionsForm}>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              {
-                data.map((factor, i) => {
-                    return this.renderRow(factor, i);
-                })
-              }
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {data.map((factor, i) => this.renderRow(factor, i))}
             </View>
           </View>
 
           <View style={styles.addFactorContainer}>
-            <Button
-              title="Back"
-              onPress={() => navigate("Factors")}
-            />
+            <Button title="Back" onPress={() => navigate('Factors')} />
             <Button
               title="Next"
-              onPress = {
-                () => {
-                  var allWeights = this.state;
-                  console.log(allWeights);
-                  if (!allWeights) { // finish validation
-                    return;
-                  }
-                  navigate("OptionScoring", {
-                    allWeights: allWeights,
-                    optionValues: optionValues,
-                    factorValues: factorValues,
-                    currentOptionIndex: 0,
-                    currentOption: Object.values(optionValues)[0],
-                  });
+              onPress={() => {
+                const allWeights = this.state;
+                console.log(allWeights);
+                if (!allWeights) {
+                  // finish validation
+                  return;
                 }
-              }
+                navigate('OptionScoring', {
+                  allWeights,
+                  optionValues,
+                  factorValues,
+                  currentOptionIndex: 0,
+                  currentOption: Object.values(optionValues)[0]
+                });
+              }}
             />
           </View>
-
         </ScrollView>
-
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff'
   },
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
     fontSize: 14,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 30
   },
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 20
   },
   welcomeImage: {
     width: 100,
     height: 80,
     resizeMode: 'contain',
     marginTop: 3,
-    marginLeft: -10,
+    marginLeft: -10
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 50
   },
   homeScreenFilename: {
-    marginVertical: 7,
+    marginVertical: 7
   },
   codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
+    color: 'rgba(96,100,109, 0.8)'
   },
   codeHighlightContainer: {
     backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
-    paddingHorizontal: 4,
+    paddingHorizontal: 4
   },
   getStartedText: {
     fontSize: 25,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   tabBarInfoContainer: {
     position: 'absolute',
@@ -194,50 +202,50 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         shadowOffset: { height: -3 },
         shadowOpacity: 0.1,
-        shadowRadius: 3,
+        shadowRadius: 3
       },
       android: {
-        elevation: 20,
-      },
+        elevation: 20
+      }
     }),
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    paddingVertical: 20
   },
   tabBarInfoText: {
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   navigationFilename: {
-    marginTop: 5,
+    marginTop: 5
   },
   helpContainer: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   helpLink: {
-    paddingVertical: 15,
+    paddingVertical: 15
   },
   helpLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
+    color: '#2e78b7'
   },
   addFactorContainer: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   newFactorLink: {
     paddingVertical: 15,
-    marginBottom: 15,
+    marginBottom: 15
   },
   newFactorLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
+    color: '#2e78b7'
   },
   optionsForm: {
     justifyContent: 'center',
     marginTop: 50,
-    padding: 20,
+    padding: 20
   }
 });

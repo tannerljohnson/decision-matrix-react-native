@@ -1,106 +1,104 @@
+/* eslint-disable global-require */
+/* eslint-disable no-use-before-define */
 import React from 'react';
-import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Button,
-  TextInput
-} from 'react-native';
-import { WebBrowser } from 'expo';
-import t from 'tcomb-form-native';
+import { Image, Platform, ScrollView, StyleSheet, Text, View, Button } from 'react-native';
+
 import { Ionicons } from '@expo/vector-icons';
 import RNPickerSelect from 'react-native-picker-select';
-
-import { MonoText } from '../components/StyledText';
 
 const scoreValues = [
   {
     label: '4',
-    value: 4,
+    value: 4
   },
   {
     label: '3.5',
-    value: 3.5,
+    value: 3.5
   },
   {
     label: '3',
-    value: 3,
+    value: 3
   },
   {
     label: '2.5',
-    value: 2.5,
+    value: 2.5
   },
   {
     label: '2',
-    value: 2,
+    value: 2
   },
   {
     label: '1.5',
-    value: 1.5,
+    value: 1.5
   },
   {
     label: '1',
-    value: 1,
+    value: 1
   },
   {
     label: '0.5',
-    value: 0.5,
+    value: 0.5
   },
   {
     label: '0',
-    value: 0,
-  },
+    value: 0
+  }
 ];
 
 const placeholder = {
   label: 'Select a value...',
   value: -1,
-  color: '#9EA0A4',
+  color: '#9EA0A4'
 };
-
 
 export default class OptionScoringScreen extends React.Component {
   static navigationOptions = {
-    header: null,
+    header: null
   };
 
   constructor(props) {
     super(props);
-    this.state =  {
+    this.state = {
       myOptionIndex: 0,
-      myCurrentOption: this.props.navigation.getParam('currentOption', 'No current option'),
+      myCurrentOption: this.props.navigation.getParam('currentOption', 'No current option')
     };
   }
 
   // bundle all values before passing to next
   addWeightsToOption = (optionValues, currentOptionIndex) => {
     // add state object to optionValues
-    optionValues[`option_${String(currentOptionIndex+1)}_factor_weights`] = this.state;
-  }
-
-  verifyHasNextOption(optionValues, currentOptionIndex) {
-    console.log(`running verifyHasNextOption on index ${currentOptionIndex}...`);
-    return Object.keys(optionValues).length > currentOptionIndex + 1;
-  }
+    // eslint-disable-next-line no-param-reassign
+    optionValues[`option_${String(currentOptionIndex + 1)}_factor_weights`] = this.state;
+  };
 
   // update state on user input
   onChange = (value, key) => {
-    this.setState({
-      [`score_factor_${key}`]: value,
-    }, () => {
-      console.log("Inside callback. State is now:");
-      console.log(this.state);
-    });
+    this.setState(
+      {
+        [`score_factor_${key}`]: value
+      },
+      () => {
+        console.log('Inside callback. State is now:');
+        console.log(this.state);
+      }
+    );
+  };
+
+  verifyHasNextOption = (optionValues, currentOptionIndex) => {
+    console.log(`running verifyHasNextOption on index ${currentOptionIndex}...`);
+    return Object.keys(optionValues).length > currentOptionIndex + 1;
   };
 
   renderRow(factor, key) {
-
-    return(
-      <View key={key} style={{ flex: 1, alignSelf: 'stretch', flexDirection: 'row' }}>
+    return (
+      <View
+        key={key}
+        style={{
+          flex: 1,
+          alignSelf: 'stretch',
+          flexDirection: 'row'
+        }}
+      >
         <View style={{ flex: 1, alignSelf: 'stretch' }}>
           <Text>{factor}</Text>
         </View>
@@ -112,11 +110,11 @@ export default class OptionScoringScreen extends React.Component {
             style={{
               ...pickerSelectStyles,
               iconContainer: {
-                top: 10, 
-                right: 12,
-              },
+                top: 10,
+                right: 12
+              }
             }}
-            value = { this.state[`score_factor_${key}`]}
+            value={this.state[`score_factor_${key}`]}
             useNativeAndroidPickerStyle={false}
             textInputProps={{ underlineColor: 'yellow' }}
             Icon={() => {
@@ -130,134 +128,130 @@ export default class OptionScoringScreen extends React.Component {
 
   render() {
     // set up navigator
-    const {navigate} = this.props.navigation;
+    const { navigate } = this.props.navigation;
     const allWeights = this.props.navigation.getParam('allWeights', 'No weight values');
-    var optionValues = this.props.navigation.getParam('optionValues', 'No option values');
+    const optionValues = this.props.navigation.getParam('optionValues', 'No option values');
     const factorValues = this.props.navigation.getParam('factorValues', 'No factor values');
     const factorData = Object.values(factorValues);
 
-    // retrieve current option index 
-    var currentOption = this.props.navigation.getParam('currentOption', 'No current option');
-    var currentOptionIndex = this.props.navigation.getParam('currentOptionIndex', 'No current option index');
+    // retrieve current option index
+    let currentOption = this.props.navigation.getParam('currentOption', 'No current option');
+    let currentOptionIndex = this.props.navigation.getParam(
+      'currentOptionIndex',
+      'No current option index'
+    );
 
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
           <View style={styles.welcomeContainer}>
-            <Image
-              source={
-                __DEV__
-                  ? require('../assets/images/robot-dev.png')
-                  : require('../assets/images/robot-prod.png')
-              }
-              style={styles.welcomeImage}
-            />
+            <Image source={require('../assets/images/robot-dev.png')} style={styles.welcomeImage} />
           </View>
 
           <View style={styles.getStartedContainer}>
-            <Text style={styles.getStartedText}>Score option #{String(this.state.myOptionIndex + 1)}: {this.state.myCurrentOption}</Text>
-            < Text >
-              Received factor weights: {
-                JSON.stringify(allWeights)
-              }
-              </Text>
+            <Text style={styles.getStartedText}>
+              Score option #{String(this.state.myOptionIndex + 1)}: {this.state.myCurrentOption}
+            </Text>
+            <Text>Received factor weights: {JSON.stringify(allWeights)}</Text>
           </View>
 
           <View style={styles.optionsForm}>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-              {
-                factorData.map((factor, i) => {
-                    return this.renderRow(factor, i);
-                })
-              }
+            <View
+              style={{
+                flex: 1,
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              {factorData.map((factor, i) => {
+                return this.renderRow(factor, i);
+              })}
             </View>
           </View>
 
           <View style={styles.addFactorContainer}>
-            <Button
-              title="Back"
-              onPress={() => navigate("FactorRanking")}
-            />
+            <Button title="Back" onPress={() => navigate('FactorRanking')} />
             <Button
               title="Next"
               onPress={() => {
                 // first save current state to larger bundled object. object includes next index, etc.
                 this.addWeightsToOption(optionValues, currentOptionIndex);
                 // if returned bundled object says no more index, go to results. else navigate to same screen again
-                var hasNextOption = this.verifyHasNextOption(optionValues, this.state.myOptionIndex);
+                const hasNextOption = this.verifyHasNextOption(
+                  optionValues,
+                  this.state.myOptionIndex
+                );
                 if (hasNextOption) {
                   ++currentOptionIndex;
                   currentOption = Object.values(optionValues)[currentOptionIndex];
                   console.log(`has next index: ${currentOptionIndex}`);
-                  this.setState({
-                    myCurrentOption: currentOption,
-                    myOptionIndex: currentOptionIndex,
-                    }, console.log(optionValues)
-                  )
+                  this.setState(
+                    {
+                      myCurrentOption: currentOption,
+                      myOptionIndex: currentOptionIndex
+                    },
+                    console.log(optionValues)
+                  );
                 } else {
-                  // TODO: add all the data! 
+                  // TODO: add all the data!
                   navigate('Results');
                 }
-              }
-            }
+              }}
             />
           </View>
-
         </ScrollView>
-
       </View>
     );
   }
-
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#fff'
   },
   developmentModeText: {
     marginBottom: 20,
     color: 'rgba(0,0,0,0.4)',
     fontSize: 14,
     lineHeight: 19,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   contentContainer: {
-    paddingTop: 30,
+    paddingTop: 30
   },
   welcomeContainer: {
     alignItems: 'center',
     marginTop: 10,
-    marginBottom: 20,
+    marginBottom: 20
   },
   welcomeImage: {
     width: 100,
     height: 80,
     resizeMode: 'contain',
     marginTop: 3,
-    marginLeft: -10,
+    marginLeft: -10
   },
   getStartedContainer: {
     alignItems: 'center',
-    marginHorizontal: 50,
+    marginHorizontal: 50
   },
   homeScreenFilename: {
-    marginVertical: 7,
+    marginVertical: 7
   },
   codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)',
+    color: 'rgba(96,100,109, 0.8)'
   },
   codeHighlightContainer: {
     backgroundColor: 'rgba(0,0,0,0.05)',
     borderRadius: 3,
-    paddingHorizontal: 4,
+    paddingHorizontal: 4
   },
   getStartedText: {
     fontSize: 25,
     color: 'rgba(96,100,109, 1)',
     lineHeight: 24,
-    textAlign: 'center',
+    textAlign: 'center'
   },
   tabBarInfoContainer: {
     position: 'absolute',
@@ -269,51 +263,51 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         shadowOffset: { height: -3 },
         shadowOpacity: 0.1,
-        shadowRadius: 3,
+        shadowRadius: 3
       },
       android: {
-        elevation: 20,
-      },
+        elevation: 20
+      }
     }),
     alignItems: 'center',
     backgroundColor: '#fbfbfb',
-    paddingVertical: 20,
+    paddingVertical: 20
   },
   tabBarInfoText: {
     fontSize: 17,
     color: 'rgba(96,100,109, 1)',
-    textAlign: 'center',
+    textAlign: 'center'
   },
   navigationFilename: {
-    marginTop: 5,
+    marginTop: 5
   },
   helpContainer: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   helpLink: {
-    paddingVertical: 15,
+    paddingVertical: 15
   },
   helpLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
+    color: '#2e78b7'
   },
   addFactorContainer: {
     marginTop: 15,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   newFactorLink: {
     paddingVertical: 15,
-    marginBottom: 15,
+    marginBottom: 15
   },
   newFactorLinkText: {
     fontSize: 14,
-    color: '#2e78b7',
+    color: '#2e78b7'
   },
   optionsForm: {
     justifyContent: 'center',
     marginTop: 50,
-    padding: 20,
+    padding: 20
   }
 });
 
@@ -326,7 +320,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: 'gray',
     borderRadius: 4,
     color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
+    paddingRight: 30 // to ensure the text is never behind the icon
   },
   inputAndroid: {
     fontSize: 16,
@@ -334,6 +328,6 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 0.5,
     borderRadius: 8,
-    paddingRight: 30, // to ensure the text is never behind the icon
-  },
+    paddingRight: 30 // to ensure the text is never behind the icon
+  }
 });
